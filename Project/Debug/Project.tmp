@@ -1,0 +1,81 @@
+<ASSEMBLER_INFO>
+ <VERSION>2.2.8</VERSION>
+ <DEVICE>"ATmega32"</DEVICE>
+ <WORKING_DIR>D:\koç ders\2025 fall\Elec317\project\Project\Project\Debug</WORKING_DIR>
+ <INCLUDE_PATH>
+  <DIR>D:/code\microchip\7.0\Packs\atmel\ATmega_DFP\1.7.374\avrasm\inc</DIR>
+  <DIR>D:\code\microchip\7.0\toolchain\avr8\avrassembler\Include</DIR>
+  <DIR></DIR>
+ </INCLUDE_PATH>
+ <SOURCE_FILE>D:\koç ders\2025 fall\Elec317\project\Project\Project\main_tank_turn_direct_control.asm</SOURCE_FILE>
+ <INCLUDED_FILES>
+  <FILE>D:/code\microchip\7.0\Packs\atmel\ATmega_DFP\1.7.374\avrasm\inc\m32def.inc</FILE>
+ </INCLUDED_FILES>
+ <OBJECT_FILES>
+  <FILE>D:\koç ders\2025 fall\Elec317\project\Project\Project\Debug\Project.obj</FILE>
+ </OBJECT_FILES>
+ <HEX_FILES>
+  <FILE>Project.hex</FILE>
+ </HEX_FILES>
+ <OUTPUT_FILES>
+  <FILE>Project.map</FILE>
+  <FILE>Project.lss</FILE>
+ </OUTPUT_FILES>
+ <LABELS>
+  <RESET><FILE>D:\koç ders\2025 fall\Elec317\project\Project\Project\main_tank_turn_direct_control.asm</FILE><LINE>65</LINE></RESET>
+  <INT0_ISR><FILE>D:\koç ders\2025 fall\Elec317\project\Project\Project\main_tank_turn_direct_control.asm</FILE><LINE>601</LINE></INT0_ISR>
+  <INT1_ISR><FILE>D:\koç ders\2025 fall\Elec317\project\Project\Project\main_tank_turn_direct_control.asm</FILE><LINE>626</LINE></INT1_ISR>
+  <tim2_ovf><FILE>D:\koç ders\2025 fall\Elec317\project\Project\Project\main_tank_turn_direct_control.asm</FILE><LINE>584</LINE></tim2_ovf>
+  <tim0_ovf><FILE>D:\koç ders\2025 fall\Elec317\project\Project\Project\main_tank_turn_direct_control.asm</FILE><LINE>568</LINE></tim0_ovf>
+  <INIT_PORTS><FILE>D:\koç ders\2025 fall\Elec317\project\Project\Project\main_tank_turn_direct_control.asm</FILE><LINE>149</LINE></INIT_PORTS>
+  <INIT_ADC><FILE>D:\koç ders\2025 fall\Elec317\project\Project\Project\main_tank_turn_direct_control.asm</FILE><LINE>188</LINE></INIT_ADC>
+  <INIT_PWM><FILE>D:\koç ders\2025 fall\Elec317\project\Project\Project\main_tank_turn_direct_control.asm</FILE><LINE>199</LINE></INIT_PWM>
+  <INIT_INTERRUPTS><FILE>D:\koç ders\2025 fall\Elec317\project\Project\Project\main_tank_turn_direct_control.asm</FILE><LINE>222</LINE></INIT_INTERRUPTS>
+  <MAIN_LOOP><FILE>D:\koç ders\2025 fall\Elec317\project\Project\Project\main_tank_turn_direct_control.asm</FILE><LINE>98</LINE></MAIN_LOOP>
+  <open_led_bright><FILE>D:\koç ders\2025 fall\Elec317\project\Project\Project\main_tank_turn_direct_control.asm</FILE><LINE>125</LINE></open_led_bright>
+  <open_led_run><FILE>D:\koç ders\2025 fall\Elec317\project\Project\Project\main_tank_turn_direct_control.asm</FILE><LINE>136</LINE></open_led_run>
+  <read_right_sensor><FILE>D:\koç ders\2025 fall\Elec317\project\Project\Project\main_tank_turn_direct_control.asm</FILE><LINE>253</LINE></read_right_sensor>
+  <read_left_sensor><FILE>D:\koç ders\2025 fall\Elec317\project\Project\Project\main_tank_turn_direct_control.asm</FILE><LINE>274</LINE></read_left_sensor>
+  <compare_sensors><FILE>D:\koç ders\2025 fall\Elec317\project\Project\Project\main_tank_turn_direct_control.asm</FILE><LINE>295</LINE></compare_sensors>
+  <sensor_to_display_values><FILE>D:\koç ders\2025 fall\Elec317\project\Project\Project\main_tank_turn_direct_control.asm</FILE><LINE>454</LINE></sensor_to_display_values>
+  <display_sensor_data><FILE>D:\koç ders\2025 fall\Elec317\project\Project\Project\main_tank_turn_direct_control.asm</FILE><LINE>492</LINE></display_sensor_data>
+  <update_motors><FILE>D:\koç ders\2025 fall\Elec317\project\Project\Project\main_tank_turn_direct_control.asm</FILE><LINE>359</LINE></update_motors>
+  <close_led_bright><FILE>D:\koç ders\2025 fall\Elec317\project\Project\Project\main_tank_turn_direct_control.asm</FILE><LINE>131</LINE></close_led_bright>
+  <end_led_bright><FILE>D:\koç ders\2025 fall\Elec317\project\Project\Project\main_tank_turn_direct_control.asm</FILE><LINE>133</LINE></end_led_bright>
+  <close_led_run><FILE>D:\koç ders\2025 fall\Elec317\project\Project\Project\main_tank_turn_direct_control.asm</FILE><LINE>142</LINE></close_led_run>
+  <end_led_run><FILE>D:\koç ders\2025 fall\Elec317\project\Project\Project\main_tank_turn_direct_control.asm</FILE><LINE>144</LINE></end_led_run>
+  <read_right_wait><FILE>D:\koç ders\2025 fall\Elec317\project\Project\Project\main_tank_turn_direct_control.asm</FILE><LINE>261</LINE></read_right_wait>
+  <read_left_wait><FILE>D:\koç ders\2025 fall\Elec317\project\Project\Project\main_tank_turn_direct_control.asm</FILE><LINE>282</LINE></read_left_wait>
+  <zero_zero><FILE>D:\koç ders\2025 fall\Elec317\project\Project\Project\main_tank_turn_direct_control.asm</FILE><LINE>351</LINE></zero_zero>
+  <right_0><FILE>D:\koç ders\2025 fall\Elec317\project\Project\Project\main_tank_turn_direct_control.asm</FILE><LINE>338</LINE></right_0>
+  <right_1><FILE>D:\koç ders\2025 fall\Elec317\project\Project\Project\main_tank_turn_direct_control.asm</FILE><LINE>301</LINE></right_1>
+  <one_one><FILE>D:\koç ders\2025 fall\Elec317\project\Project\Project\main_tank_turn_direct_control.asm</FILE><LINE>313</LINE></one_one>
+  <only_1_ldr_turn><FILE>D:\koç ders\2025 fall\Elec317\project\Project\Project\main_tank_turn_direct_control.asm</FILE><LINE>335</LINE></only_1_ldr_turn>
+  <one_zero><FILE>D:\koç ders\2025 fall\Elec317\project\Project\Project\main_tank_turn_direct_control.asm</FILE><LINE>308</LINE></one_zero>
+  <set_tank_turn_right><FILE>D:\koç ders\2025 fall\Elec317\project\Project\Project\main_tank_turn_direct_control.asm</FILE><LINE>428</LINE></set_tank_turn_right>
+  <left_bigger><FILE>D:\koç ders\2025 fall\Elec317\project\Project\Project\main_tank_turn_direct_control.asm</FILE><LINE>326</LINE></left_bigger>
+  <right_bigger><FILE>D:\koç ders\2025 fall\Elec317\project\Project\Project\main_tank_turn_direct_control.asm</FILE><LINE>320</LINE></right_bigger>
+  <equal><FILE>D:\koç ders\2025 fall\Elec317\project\Project\Project\main_tank_turn_direct_control.asm</FILE><LINE>331</LINE></equal>
+  <set_motors_turn><FILE>D:\koç ders\2025 fall\Elec317\project\Project\Project\main_tank_turn_direct_control.asm</FILE><LINE>397</LINE></set_motors_turn>
+  <one_one_end><FILE>D:\koç ders\2025 fall\Elec317\project\Project\Project\main_tank_turn_direct_control.asm</FILE><LINE>333</LINE></one_one_end>
+  <set_motors_forward><FILE>D:\koç ders\2025 fall\Elec317\project\Project\Project\main_tank_turn_direct_control.asm</FILE><LINE>382</LINE></set_motors_forward>
+  <zero_one><FILE>D:\koç ders\2025 fall\Elec317\project\Project\Project\main_tank_turn_direct_control.asm</FILE><LINE>345</LINE></zero_one>
+  <set_tank_turn_left><FILE>D:\koç ders\2025 fall\Elec317\project\Project\Project\main_tank_turn_direct_control.asm</FILE><LINE>413</LINE></set_tank_turn_left>
+  <set_motors_stop><FILE>D:\koç ders\2025 fall\Elec317\project\Project\Project\main_tank_turn_direct_control.asm</FILE><LINE>442</LINE></set_motors_stop>
+  <sensor_to_motor><FILE>D:\koç ders\2025 fall\Elec317\project\Project\Project\main_tank_turn_direct_control.asm</FILE><LINE>368</LINE></sensor_to_motor>
+  <right><FILE>D:\koç ders\2025 fall\Elec317\project\Project\Project\main_tank_turn_direct_control.asm</FILE><LINE>457</LINE></right>
+  <right_done><FILE>D:\koç ders\2025 fall\Elec317\project\Project\Project\main_tank_turn_direct_control.asm</FILE><LINE>470</LINE></right_done>
+  <right_ten><FILE>D:\koç ders\2025 fall\Elec317\project\Project\Project\main_tank_turn_direct_control.asm</FILE><LINE>465</LINE></right_ten>
+  <left><FILE>D:\koç ders\2025 fall\Elec317\project\Project\Project\main_tank_turn_direct_control.asm</FILE><LINE>473</LINE></left>
+  <left_done><FILE>D:\koç ders\2025 fall\Elec317\project\Project\Project\main_tank_turn_direct_control.asm</FILE><LINE>485</LINE></left_done>
+  <left_ten><FILE>D:\koç ders\2025 fall\Elec317\project\Project\Project\main_tank_turn_direct_control.asm</FILE><LINE>480</LINE></left_ten>
+  <convert_seven_seg><FILE>D:\koç ders\2025 fall\Elec317\project\Project\Project\main_tank_turn_direct_control.asm</FILE><LINE>532</LINE></convert_seven_seg>
+  <delay1ms><FILE>D:\koç ders\2025 fall\Elec317\project\Project\Project\main_tank_turn_direct_control.asm</FILE><LINE>556</LINE></delay1ms>
+  <seg_table><FILE>D:\koç ders\2025 fall\Elec317\project\Project\Project\main_tank_turn_direct_control.asm</FILE><LINE>544</LINE></seg_table>
+  <delay><FILE>D:\koç ders\2025 fall\Elec317\project\Project\Project\main_tank_turn_direct_control.asm</FILE><LINE>559</LINE></delay>
+  <end_robot_state><FILE>D:\koç ders\2025 fall\Elec317\project\Project\Project\main_tank_turn_direct_control.asm</FILE><LINE>615</LINE></end_robot_state>
+  <stop_motors><FILE>D:\koç ders\2025 fall\Elec317\project\Project\Project\main_tank_turn_direct_control.asm</FILE><LINE>611</LINE></stop_motors>
+  <set_dark_threshold><FILE>D:\koç ders\2025 fall\Elec317\project\Project\Project\main_tank_turn_direct_control.asm</FILE><LINE>638</LINE></set_dark_threshold>
+  <end_set_threshold><FILE>D:\koç ders\2025 fall\Elec317\project\Project\Project\main_tank_turn_direct_control.asm</FILE><LINE>641</LINE></end_set_threshold>
+ </LABELS>
+</ASSEMBLER_INFO>
