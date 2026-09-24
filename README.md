@@ -242,10 +242,10 @@ The TM1637 display shows sensor readings scaled to 0-63 as `LL:RR`:
 **Option B - avra (command line)**
 
 ```
-avra -I <avra>/includes main_tank_turn_direct_control.asm
+avra -I C:\path\to\avra\includes main_tank_turn_direct_control.asm
 ```
 
-`-I` points to the folder containing `m328Pdef.inc` (not needed if avra is installed system-wide).
+Run it inside `Project/`. `-I` points to the folder containing `m328Pdef.inc` (not needed if avra is installed system-wide).
 
 Output: `main_tank_turn_direct_control.hex`. The register alias warnings (r26-r29 already assigned to X/Y) are expected.
 
