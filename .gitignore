@@ -1,0 +1,26 @@
+# Atmel / Microchip Studio user & cache files
+.vs/
+*.atsuo
+*.atsln.user
+*.asmproj.user
+*.cproj.user
+*.suo
+*.user
+
+# Build output (Debug/Release configurations)
+Debug/
+Release/
+*.hex
+*.eep
+*.obj
+*.lss
+*.map
+*.tmp
+*.elf
+*.o
+
+# OS / editor files
+Thumbs.db
+Desktop.ini
+.DS_Store
+.vscode/
