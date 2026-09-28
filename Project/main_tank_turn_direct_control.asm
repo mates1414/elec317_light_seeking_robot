@@ -37,6 +37,15 @@
 .equ bright_threshold = 160 ; Light threshold for bright mode
 .equ B_controller = 16      ; Left motor speed compensation.
 ; Two motors do not run at the same speed with the same PWM, recalibrate on the new chassis.
+.equ btn_confirm = 125      ; Button must stay LOW for 125 x 80us = 10ms to count as a press
+.equ btn_lockout = 250      ; Ignore a button for 250 Timer0 overflows (~256ms) after a press
+;-------------------------------------------------------------------------
+; SRAM VARIABLES
+;-------------------------------------------------------------------------
+.dseg
+.org SRAM_START
+lock_start: .byte 1         ; Start/Stop button lockout counter (Timer0 overflows)
+lock_mode:  .byte 1         ; Mode button lockout counter (Timer0 overflows)
 ;-------------------------------------------------------------------------
 ; TB6612FNG MOTOR DRIVER PIN DEFINITIONS (STBY -> 5V)
 ;-------------------------------------------------------------------------
@@ -115,6 +124,12 @@ RESET:
 	ldi robot_state, $00
 	; initialize dark mode (0xFF = bright mode, 0x00 = dark mode)
 	ldi dark_mode, $FF
+	; motors start from standstill, buttons start unlocked
+	ldi motor_right, motor_off
+	ldi motor_left, motor_off
+	clr temp
+	sts lock_start, temp
+	sts lock_mode, temp
 
 	sei
 ;-------------------------------------------------------------------------
@@ -142,8 +157,7 @@ MAIN_LOOP:
 	; display sensor data on seven segment
 	rcall display_sensor_data
 
-	; update PWM values / motor speeds
-	rcall update_motors
+	; PWM registers follow motor_right/motor_left in TIM0_OVF (soft start)
 
     rjmp MAIN_LOOP
 ;-------------------------------------------------------------------------
@@ -243,6 +257,10 @@ INIT_PWM:
     ; Initialize duty cycle to 0
     ldi temp, 0
     sts OCR2A, temp
+
+    ; Timer0 overflow (~1ms tick) drives the PWM ramp and button lockouts
+    ldi temp, (1<<TOIE0)
+    sts TIMSK0, temp
 
     ret
 ;-------------------------------------------------------------------------
@@ -389,17 +407,6 @@ zero_zero:
 	rcall set_motors_stop       ; stop motors
     ret
 ;-------------------------------------------------------------------------
-; SUBROUTINE: UPDATE_MOTORS
-; Purpose: Apply motor speed values to PWM registers
-;-------------------------------------------------------------------------
-update_motors:
-    ; Update Timer0 OCR0A for right motor (PD6 / D6)
-    out OCR0A, motor_right
-
-    ; Update Timer2 OCR2A for left motor (PB3 / D11)
-    sts OCR2A, motor_left
-    ret
-;-------------------------------------------------------------------------
 ; Subroutine: store sensor data to modify and set them to motor PWM values
 sensor_to_motor:
     mov temp, sensor_right
@@ -416,6 +423,8 @@ sensor_to_motor:
 ; Left Motor:  BIN1=HIGH, BIN2=LOW
 ;-------------------------------------------------------------------------
 set_motors_forward:
+    rcall cut_pwm_if_right_backward
+    rcall cut_pwm_if_left_backward
     sbi PORTD, TB6612_AIN1
     cbi PORTB, TB6612_AIN2
     sbi PORTD, TB6612_BIN1
@@ -431,6 +440,8 @@ set_motors_forward:
 ; Left Motor:  BIN1=HIGH, BIN2=LOW
 ;-------------------------------------------------------------------------
 set_motors_turn:
+    rcall cut_pwm_if_right_backward
+    rcall cut_pwm_if_left_backward
     sbi PORTD, TB6612_AIN1
     cbi PORTB, TB6612_AIN2
     sbi PORTD, TB6612_BIN1
@@ -447,6 +458,8 @@ set_motors_turn:
 ; Left Motor:  BIN1=LOW,  BIN2=HIGH (backward)
 ;-------------------------------------------------------------------------
 set_tank_turn_left:
+    rcall cut_pwm_if_right_backward
+    rcall cut_pwm_if_left_forward
     sbi PORTD, TB6612_AIN1
     cbi PORTB, TB6612_AIN2
     cbi PORTD, TB6612_BIN1
@@ -462,6 +475,8 @@ set_tank_turn_left:
 ; Left Motor:  BIN1=HIGH, BIN2=LOW  (forward)
 ;-------------------------------------------------------------------------
 set_tank_turn_right:
+    rcall cut_pwm_if_right_forward
+    rcall cut_pwm_if_left_backward
     cbi PORTD, TB6612_AIN1
     sbi PORTB, TB6612_AIN2
     sbi PORTD, TB6612_BIN1
@@ -483,6 +498,35 @@ set_motors_stop:
 
 	ldi motor_right, motor_off
 	ldi motor_left, motor_off
+    ret
+;-------------------------------------------------------------------------
+; SUBROUTINES: CUT_PWM_IF_*
+; Purpose: Before a motor reverses, drop its PWM to 0 so TIM0_OVF ramps it
+;          up again. Reversing a spinning motor at full PWM draws a current
+;          spike large enough to disturb the rest of the circuit.
+;-------------------------------------------------------------------------
+cut_pwm_if_right_forward:
+    clr temp
+    sbic PORTD, TB6612_AIN1     ; AIN1 HIGH = right motor going forward
+    out OCR0A, temp
+    ret
+
+cut_pwm_if_right_backward:
+    clr temp
+    sbic PORTB, TB6612_AIN2     ; AIN2 HIGH = right motor going backward
+    out OCR0A, temp
+    ret
+
+cut_pwm_if_left_forward:
+    clr temp
+    sbic PORTD, TB6612_BIN1     ; BIN1 HIGH = left motor going forward
+    sts OCR2A, temp
+    ret
+
+cut_pwm_if_left_backward:
+    clr temp
+    sbic PORTB, TB6612_BIN2     ; BIN2 HIGH = left motor going backward
+    sts OCR2A, temp
     ret
 ;-------------------------------------------------------------------------
 ; SUBROUTINE: SENSOR_TO_DISPLAY_VALUES
@@ -651,16 +695,66 @@ tm1637_delay_loop:
     brne tm1637_delay_loop
     ret
 ;-------------------------------------------------------------------------
-; TIMER0 OVERFLOW INTERRUPT SERVICE ROUTINE
-; Purpose: Can be used for timing or additional motor control
+; TIMER0 OVERFLOW INTERRUPT SERVICE ROUTINE (~976Hz, every 1.024ms)
+; Purpose: 1) Soft start - PWM rises by 1 per tick toward motor_right /
+;             motor_left (0 -> 192 in ~200ms), drops to a lower target at once.
+;             A full-PWM start draws a current spike that disturbs the Uno.
+;          2) Count down button lockouts and re-enable INT0/INT1
 ;-------------------------------------------------------------------------
 TIM0_OVF:
     push temp
     in temp, SREG
     push temp
 
-    ; Timer0 overflow handler code here (if needed)
-    ; Currently PWM is handled automatically by hardware
+    ; right motor ramp (OCR0A)
+    in temp, OCR0A
+    cp temp, motor_right
+    breq ramp_right_done
+    brlo ramp_right_up
+    mov temp, motor_right       ; above target -> slow down immediately
+    rjmp ramp_right_store
+ramp_right_up:
+    inc temp
+ramp_right_store:
+    out OCR0A, temp
+ramp_right_done:
+
+    ; left motor ramp (OCR2A)
+    lds temp, OCR2A
+    cp temp, motor_left
+    breq ramp_left_done
+    brlo ramp_left_up
+    mov temp, motor_left        ; above target -> slow down immediately
+    rjmp ramp_left_store
+ramp_left_up:
+    inc temp
+ramp_left_store:
+    sts OCR2A, temp
+ramp_left_done:
+
+    ; Start/Stop button lockout
+    lds temp, lock_start
+    tst temp
+    breq lock_start_done
+    dec temp
+    sts lock_start, temp
+    brne lock_start_done
+    ldi temp, (1<<INTF0)        ; drop edges latched during lockout
+    out EIFR, temp
+    sbi EIMSK, INT0
+lock_start_done:
+
+    ; Mode button lockout
+    lds temp, lock_mode
+    tst temp
+    breq lock_mode_done
+    dec temp
+    sts lock_mode, temp
+    brne lock_mode_done
+    ldi temp, (1<<INTF1)
+    out EIFR, temp
+    sbi EIMSK, INT1
+lock_mode_done:
 
     pop temp
     out SREG, temp
@@ -686,11 +780,31 @@ TIM2_OVF:
 ; INT0 INTERRUPT SERVICE ROUTINE
 ; Purpose: Toggle robot_state (Start/Stop)
 ; PD2 (D2) button pressed -> toggle between running (0xFF) and stopped (0x00)
+; Motor noise and contact bounce put short LOW spikes on the button line.
+; A real press holds PD2 LOW, so the press is accepted only after 10ms of
+; continuous LOW, then the button is ignored for ~256ms.
 ;-------------------------------------------------------------------------
 INT0_ISR:
     push temp
     in temp, SREG
     push temp
+    push temp2
+
+    ldi temp2, btn_confirm
+int0_confirm_outer:
+    clr temp                    ; 256 x 5 cycles = 80us
+int0_confirm_inner:
+    sbic PIND, BTN_START        ; pin went HIGH -> noise, not a press
+    rjmp end_robot_state
+    dec temp
+    brne int0_confirm_inner
+    dec temp2
+    brne int0_confirm_outer
+
+    ; lock the button, TIM0_OVF re-enables INT0
+    cbi EIMSK, INT0
+    ldi temp, btn_lockout
+    sts lock_start, temp
 
     ; Toggle robot_state
     com robot_state         ; Complement: 0x00 -> 0xFF, 0xFF -> 0x00
@@ -703,6 +817,7 @@ stop_motors:
 
 end_robot_state:
 
+    pop temp2
     pop temp
     out SREG, temp
     pop temp
@@ -711,11 +826,29 @@ end_robot_state:
 ; INT1 INTERRUPT SERVICE ROUTINE
 ; Purpose: Toggle dark_mode (Bright/Dark mode)
 ; PD3 (D3) button pressed -> toggle between bright (0xFF) and dark (0x00) mode
+; Same noise filter and lockout as INT0_ISR
 ;-------------------------------------------------------------------------
 INT1_ISR:
     push temp
     in temp, SREG
     push temp
+    push temp2
+
+    ldi temp2, btn_confirm
+int1_confirm_outer:
+    clr temp                    ; 256 x 5 cycles = 80us
+int1_confirm_inner:
+    sbic PIND, BTN_MODE         ; pin went HIGH -> noise, not a press
+    rjmp end_set_threshold
+    dec temp
+    brne int1_confirm_inner
+    dec temp2
+    brne int1_confirm_outer
+
+    ; lock the button, TIM0_OVF re-enables INT1
+    cbi EIMSK, INT1
+    ldi temp, btn_lockout
+    sts lock_mode, temp
 
     ; Toggle dark_mode
     com dark_mode           ; Complement: 0x00 -> 0xFF, 0xFF -> 0x00
@@ -729,6 +862,7 @@ set_dark_threshold:
 
 end_set_threshold:
 
+    pop temp2
     pop temp
     out SREG, temp
     pop temp
